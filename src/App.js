@@ -1,25 +1,54 @@
-import logo from './logo.svg';
+import { Navigate, useRoutes } from 'react-router-dom';
 import './App.css';
+import LoginForm from './components/LoginForm';
+import Dashboard from './components/Dashboard';
+import { useContext } from 'react';
+import { AuthContext, getAuthToken } from './utils/auth';
+import PageNotFound from './components/PageNotFound';
+import PostForm from './components/PostForm';
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+  const {isAuthenticated} = useContext(AuthContext);
+
+  // console.log(isAuthenticated);
+  // console.log(getAuthToken());
+
+  let element = useRoutes([
+    {
+      path: "/",
+      element: <LoginForm />
+    },
+    {
+      path: "/login",
+      element: <LoginForm />
+    },
+    {
+      path: "/dashboard",
+      element: <Dashboard />
+    },
+    {
+      path: "/post",
+      element: isAuthenticated ? <PostForm /> : <Navigate to="/login" replace={true} />
+    },
+    {
+      path: "*",
+      element: <PageNotFound />
+    }
+  ]);
+
+  // return (
+  //   <BrowserRouter>
+  //       <Routes>
+  //         <Route path='/' Component={Navigation} />
+  //         <Route path='/login' Component={LoginForm} />
+  //         <Route path='/signup' Component={LoginForm} />
+  //         {/* <Route path='/dashboard' element={() => loader} /> */}
+  //         <ProtectedRoute path="/dashboard" component={Dashboard}/>
+          
+  //       </Routes>
+  //   </BrowserRouter>
+  // );
+  return element;
 }
 
 export default App;
